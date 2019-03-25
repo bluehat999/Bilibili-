@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="referrer" content="no-referrer" /> <!--可以让img标签预加载网络图片-->
+    <link rel="stylesheet" href="css/global.css">
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
+    
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+    <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script> 
+    <title>Bilibili画像站</title>
+    <link href="img/logo.ico" rel="icon" type="image/x-ico">
+</head>
+<body>
+    <!-- 小屏幕上水平导航栏会切换为垂直的 -->
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top" style="">
+        <a class="navbar-brand" href="#">
+            <img src='img/logo.png' alt="Logo" style="width:40px;">
+        </a>
+                <!-- Links -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                <a class="nav-link" href="index.html">主页</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="prefer.html">用户分析</a>
+                </li>
+                <li class="nav-item active">
+                <a class="nav-link" href="query1.html">信息查询</a>
+                </li>
+            </ul>
+            <form class="form-inline" >
+                <input class="form-control" id="search-bar-mid" type="number" name='mid' value='7043211' placeholder="bilibili user id" style="width:50%">
+                <button class="navbar-btn" type="button" onclick="$('#search-bar-mid').trigger('keypress',enter=true);"
+                    style="background-color: transparent; border: 1px solid transparent;padding: .25rem .75rem;">
+                    <img src="img/search.png" style="width:1.5em;height:1.5em">
+                </button>
+                <button class="navbar-btn" type="button" onclick=" $('#toolbar').toggle();"
+                        style="background-color: transparent; border: 1px solid transparent;padding: .25rem .75rem;">
+                    <img src="img/setting.png" style="width:1.5em;height:1.5em">
+                </button>
+            </form>
+            <div class="suspension-bar" id="toolbar">
+                    <div><input name='search' type="checkbox" checked><span onclick="getUserInfo($('#search-bar-mid').val())">用户基本信息</span></div>
+                    <div><input name='search' type="checkbox" checked><span onclick="">个人画像</span></div>
+                    <div><input name='search' type="checkbox" checked><span onclick="getFollowing($('#search-bar-mid').val())">关注列表</span></div>
+                    <div><input name='search' type="checkbox" checked><span onclick="getFollowers($('#search-bar-mid').val())">粉丝列表</span></div>
+                    <div><input name='search' type="checkbox" checked><span onclick="getCollection($('#search-bar-mid').val())">收藏列表</span></div>
+                    <div><input name='search' type="checkbox" checked><span onclick="getBungumi($('#search-bar-mid').val())">订阅列表</span></div>           
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid" style="margin-top:5rem">
+        <div class ="row">
+            <div class="col-md-4">
+                <div id="basic_info" class="card bg-light text-dark">
+                    <div class="card-header" data-toggle="collapse" data-target="#basic_info .collapse">用户基本信息</div>
+                    <div class="card-body collapse show">内容</div> 
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="character_info" class="card bg-light text-dark">
+                    <div class="card-header" data-toggle="collapse" data-target="#character_info .collapse">个人画像</div>
+                    <div class="card-body collapse show">内容</div> 
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="followers_info" class="card bg-light text-dark">
+                    <div class="card-header" data-toggle="collapse" data-target="#followers_info .collapse">粉丝列表</div>
+                    <div class="card-body collapse show">内容</div> 
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div id="following_info" class="card bg-light text-dark">
+                    <div class="card-header" data-toggle="collapse" data-target="#following_info .collapse">关注列表</div>
+                    <div class="card-body collapse show">内容</div> 
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="collection_info" class="card bg-light text-dark">
+                    <div class="card-header" data-toggle="collapse" data-target="#collection_info .collapse">收藏列表</div>
+                    <div class="card-body collapse show">内容</div> 
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="bangumi_info" class="card bg-light text-dark">
+                    <div class="card-header" data-toggle="collapse" data-target="#bangumi_info .collapse">订阅列表</div>
+                    <div class="card-body collapse show">内容</div> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <span>
+        <style>
+            .navbar .search-input {
+            width: 0;
+            height: 28px;
+            background-color: #F3F3F3;
+            border-radius: 0;
+            position: absolute;
+            top: 8px;
+            right: 44px;
+            visibility: hidden;
+            opacity: 0;
+            padding: 0 8px;
+            border: 1px solid #DDD;
+            box-shadow: none;
+            outline: 0;
+            font-size: 16px;
+            -webkit-appearance: none;
+            -webkit-transition: opacity .2s linear;
+            transition: opacity .2s linear;
+            box-sizing: border-box;
+        }
+        div{
+            
+            white-space:nowrap;
+        }
+        .card{
+            margin:0;
+        }
+        .card-body{
+            max-height: 22rem;
+            overflow-y:auto;
+            font-size:14px;
+        }
+        
+        </style>
+        
+        <script>
+            var pg2=1;
+            var pg3=1;
+            var pg4=1;
+            var pg5=1;
+            var usertxt="";
+            var loading_img="<img src='img/loading.gif' style='margin:auto;position:relative;left:47%;top:47%'>";
+            var kong_img="<img src='img/kong.png' style='margin:auto;position:relative;left:47%;top:47%'>"
+            // $ jquery,需导入js文件
+            $('#search-bar-mid').bind('keypress',function(event,enter){//监听回车事件
+                if(event.keyCode == "13"||enter)    
+                {  
+                    usertxt = "";
+                    $('#toolbar div input[name="search"]:checked').each(function(){
+                        $(this).next().trigger("click");
+                    });
+                }
+            });
+            $('#search-bar-mid').trigger('keypress',enter=true);
+            $('#toolbar').hide();
+            function getUserInfo(mid){
+                $('#basic_info .card-body').empty();
+                $('#basic_info .card-body').append(loading_img);
+                $.ajax({
+                    type:'GET',
+                    url:'php/bili-user.php',
+                    data:{mid:mid,action:0,pg:1},
+                    success:function(data){
+                        // var json = $.parseJSON(data);
+                        var json = eval('('+data + ')');
+                        if (json['status']=="true"){
+                            console.log(json)
+                            $('#basic_info .card-body img').remove();
+                            var img = "<a target='_blank' href='https://space.bilibili.com/mid'><img alt='face' src=my_face style='width: 64px;\
+                                                                            height: 64px;\
+                                                                            background: #fff;\
+                                                                            border-radius: 48px;\
+                                                                            float:left;\
+                                                                            border:1px solid #bbb'></a>";
+                            img = img.replace("my_face",json['data']['face']);
+                            img = img.replace("mid",json['data']['mid'])
+                            $('#basic_info .card-body').append(img);
+                            delete json['data'].face;
+                            delete json['data'].mid;
+                            for (var key in json['data']){
+                                var html = "<div class='textline'><label class='card-text'>key: </label><label class='card-text'>value</label></div>";
+                                html = html.replace("key",key);
+                                html = html.replace("value",json['data'][key]);
+                                $('#basic_info .card-body').append(html);
+                            }
+                        }
+                        else{
+                            console.log("userinfo",json['data'])
+                        }
+                    }   
+                });
+            };
+            function getFollowing(mid){
+                if (true){ //pg2==1
+                    $('#following_info .card-body').empty()
+                    $('#following_info .card-body').append(loading_img);
+                }
+                $.ajax({
+                    type:'GET',
+                    url:'php/bili-user.php',
+                    data:{mid:mid,action:2,pg:pg2},
+                    success:function(data){
+                        data = data.slice(0,data.lastIndexOf('}')+1);
+                        // console.log(typeof(data),data);
+                        //JSON和parseJSON中单引号键值对是非法的
+                        // console.log(data)
+                        data = JSON.stringify(data).replace(/\'/g,'"');  
+                        data = $.parseJSON(data.slice(1,-1));// console.log(JSON.parse(data));
+                        if (data['status']=='true'){
+                            var list = data['data'];
+                            $('#following_info .card-body img').remove()
+                            for (var i=0;i<list.length;i++){
+                                var html = "<a class='textline' target='_blank' href='https://space.bilibili.com/mid' \
+                                draggable='true' ondragstart='drag(event)'>\
+                                <label class='textline-content'>value</label></a>";
+                                html = html.replace("mid",list[i]['mid']);
+                                html = html.replace("value",list[i]['name']);
+                                $('#following_info .card-body').append(html);
+                            }
+                            if (list.length==0){
+                                $('#following_info .card-body').append(kong_img);
+                            }
+                            // pg2 = pg2+1;
+                        }
+                        else{
+                            console.log("following",data['data']);
+                        }
+                    }
+                }
+                )
+            }
+            function getFollowers(mid){
+                if (true){//pg3==1
+                    $('#followers_info .card-body').empty();
+                    $('#followers_info .card-body').append(loading_img);
+                }
+                $.ajax({
+                    type:'GET',
+                    url:"php/bili-user.php",
+                    data:{mid:mid,action:3,pg:pg3},
+                    success:function(data){
+                        data = data.slice(0,data.lastIndexOf('}')+1);
+                        data = JSON.stringify(data).replace(/\'/g,'"'); 
+                        // console.log(data)
+                        data = $.parseJSON(data.slice(1,-1));
+                        if (data['status']=='true'){ 
+                            var list = data['data']
+                            $('#followers_info .card-body img').remove();
+                            for (var i=0;i<list.length;i++){
+                                var html = "<a class='textline' target='_blank' href='https://space.bilibili.com/mid'\
+                                draggable='true' ondragstart='drag(event)'>\
+                                <label class='textline-content'>value</label></a>";
+                                html = html.replace("mid",list[i]['mid']);
+                                html = html.replace("value",list[i]['name']);
+                                $('#followers_info .card-body').append(html);
+                            }
+                            if (list.length==0){
+                                $('#followers_info .card-body').append(kong_img);
+                            }
+                            // pg3 = pg3+1;
+                        }
+                        else{
+                            console.log(data['data']);
+                        }
+                    }
+                })
+            }
+            function getCollection(mid){
+                if (true){//pg4==1
+                    $('#collection_info .card-body').empty();
+                    $('#character_info .card-body').empty();
+                    $('#character_info .card-body').append(loading_img);
+                    $('#collection_info .card-body').append(loading_img);
+                }
+                $.ajax({
+                    type:'GET',
+                    url:"php/bili-user.php",
+                    data:{mid:mid,action:4,pg:pg4},
+                    success:function(data){
+                        data = data.slice(data.indexOf('{'));
+                        data = JSON.stringify(data).replace(/\'/g,'"');
+                        data = data.replace(/\\/g,'');
+                        data = JSON.parse(data.slice(1,-1));
+                        if (data['status']=='true'){ 
+                            var datalist = data['data'];
+                            // console.log(datalist)
+                            $('#collection_info .card-body img').remove();
+                            var txt="";
+                            for (var i=0;i<datalist.length;i++){    
+                                var html = "<a class='textline'  target='_blank' href='https://www.bilibili.com/video/avaid'><label class='textline-label'>key</label></a><br>";
+                                html = html.replace("key",datalist[i]['title']);
+                                html = html.replace("aid",datalist[i]['aid']);
+                                // usertxt += datalist[i]['title']+",";
+                                // for (var j=0;j<datalist[i]['tags'].length;j++){
+                                //     txt += datalist[i]['tags'][j]['tag_name']+" ";
+                                // }
+                                $('#collection_info .card-body').append(html); 
+                            }
+                            $('#character_info .card-body').empty();
+                            if (datalist.length==0){
+                                $('#character_info .card-body').append(kong_img);
+                                $('#collection_info .card-body').append(kong_img);
+                            }else{
+                                $('#character_info .card-body').append("<img src='usertag/mid.jpg' class='.card-img-bottom' style='max-width:100%;height:auto'>".replace('mid',mid));
+                            }
+                        }
+                        else{
+                            console.log(data['data']);
+                        }
+                    }
+                }
+                )
+            }
+            function getBungumi(mid){
+                if (true){//pg5=1
+                    $('#bangumi_info .card-body').empty();
+                    $('#bangumi_info .card-body').append(loading_img);
+                }
+                $.ajax({
+                    type:'GET',
+                    url:"php/bili-user.php",
+                    data:{mid:mid,action:5,pg:pg5},
+                    success:function(data){
+                        data = JSON.stringify(data).replace(/\'/g,'"'); 
+                        data = data.replace(/\\/g,'');
+                        data = JSON.parse(data.slice(1,-1))
+                        if (data['status']=='true'){ 
+                            var list = data['data']
+                            console.log(list)
+                            $('#bangumi_info .card-body img').remove();
+                            for (var i=0;i<list.length;i++){
+                                var html = "<a class='textline' target='_blank' href='url'><label class='textline-label'>key</label></a><br>";
+                                html = html.replace("key",list[i]['title']);
+                                html = html.replace("url",list[i]['url']);
+                                $('#bangumi_info .card-body').append(html);
+                            }
+                            if (list.length==0){
+                                $('#bangumi_info .card-body').append(kong_img);
+                            }
+                            // pg5 = pg5+1;
+                        }
+                        else{
+                            console.log(data['data']);
+                            $('#bangumi_info .card-body img').remove();
+                            $('#bangumi_info .card-body').append(kong_img);
+                        }
+                    }
+                }
+                )
+            }
+            //拖放操作
+            function allowDrop(ev)
+            {
+                ev.preventDefault();
+            }
+            function drag(ev)
+            {
+                ev.dataTransfer.setData("Text",ev.target.id);
+            }
+            function drop(ev)
+            {
+                ev.preventDefault();
+                var data=ev.dataTransfer.getData("Text");
+                var mid = data.split('/').pop();
+                $('#search-bar-mid').val(mid);
+                $('#search-bar-mid').trigger('keypress',enter=true);
+            }
+        </script>
+    </span>  
+</body>
+</html>
