@@ -31,7 +31,8 @@ headers = {
      'Host': 'api.bilibili.com',
 
 }
-db = pymysql.connect("134.175.205.95","root","712srxsj","bilibili" )
+
+db = pymysql.connect()#连接数据库，敏感信息已去除
 cursor = db.cursor()
 
 def get_tag(tid):
